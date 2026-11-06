@@ -3,7 +3,7 @@
 # LAB_LANG=ko (default) | en
 
 LAB_LANG="${LAB_LANG:-ko}"
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(CDPATH= cd -- "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$ROOT_DIR/.lab.env"
 
 # msg "<korean>" "<english>"

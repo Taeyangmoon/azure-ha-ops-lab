@@ -40,8 +40,8 @@ az vmss extension set -g $RG --vmss-name $VMSS \
 인스턴스에 적용되었는지 확인합니다. (모델 업그레이드 정책이 `Automatic` 이라 자동으로 적용됩니다.)
 
 ```bash
-az vmss extension list -g $RG --vmss-name $VMSS --query "[].{name:name, state:provisioningState}" -o table
-az vmss list-instances -g $RG -n $VMSS --query "[].{id:instanceId, latestModel:latestModelApplied}" -o table
+az vmss extension list -g $RG --vmss-name $VMSS --query "[].{name:name, version:typeHandlerVersion}" -o table
+az vmss list-instances -g $RG -n $VMSS --query "[].{instance:instanceId, latestModel:latestModelApplied}" -o table
 ```
 
 `latestModel` 이 모두 `true` 가 될 때까지 1~3분 기다립니다.
@@ -95,7 +95,7 @@ Heartbeat
 ```kusto
 Perf
 | where TimeGenerated > ago(1h)
-| where ObjectName == "Processor" and CounterName == "% Processor Time" and InstanceName == "_Total"
+| where ObjectName == "Processor" and CounterName == "% Processor Time" and InstanceName == "total"
 | summarize AvgCpu = avg(CounterValue) by bin(TimeGenerated, 1m), Computer
 | render timechart
 ```

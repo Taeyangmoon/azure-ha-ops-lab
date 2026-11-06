@@ -38,7 +38,7 @@ scripts/deploy.sh
 
 It takes about 5-8 minutes. While you wait, open [`infra/main.bicep`](../../infra/main.bicep) to see how the table above looks as code.
 
-Defaults are region `koreacentral` and size `Standard_B2s`. To change them:
+Defaults are region `koreacentral` and size `Standard_B2s_v2`. To change them:
 
 ```bash
 LOCATION=japaneast VM_SIZE=Standard_D2s_v5 scripts/deploy.sh
@@ -57,7 +57,7 @@ These variables (`RG`, `VMSS`, `LB_IP`, `WORKSPACE`, ...) are used in later modu
 
 ```bash
 curl http://$LB_IP/whoami.txt
-az vmss list-instances -g $RG -n $VMSS --query "[].{id:instanceId, name:osProfile.computerName, zone:zones[0], state:provisioningState}" -o table
+az vmss list-instances -g $RG -n $VMSS --query "[].{instance:instanceId, name:osProfile.computerName, zone:zones[0], state:provisioningState}" -o table
 ```
 
 You can also open `http://<LB_IP>` in a browser. If you see an instance name, you are good.
@@ -67,6 +67,7 @@ You can also open `http://<LB_IP>` in a browser. If you see an instance name, yo
 | Symptom | Fix |
 |---|---|
 | `QuotaExceeded` / not enough cores | Use another region or change `VM_SIZE`. Check quota: `az vm list-usage -l $LOCATION -o table` |
+| `SkuNotAvailable` (e.g. capacity restrictions on `Standard_B2s`) | Use another size: `VM_SIZE=Standard_B2s_v2 scripts/deploy.sh`. List sizes: `az vm list-skus -l $LOCATION --resource-type virtualMachines -o table` |
 | `SkuNotAvailable` / zone errors | `USE_ZONES=false scripts/deploy.sh` (region/size without zone support) |
 | `curl` gets no response after deploy | The instances are still installing nginx. Retry in 1-3 minutes |
 | Name conflict | `RESOURCE_GROUP=rg-ha-ops-lab2 scripts/deploy.sh` |

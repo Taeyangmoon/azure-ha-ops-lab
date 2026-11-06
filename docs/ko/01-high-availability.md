@@ -51,7 +51,7 @@ az vmss deallocate -g $RG -n $VMSS --instance-ids 0
 
 ```bash
 scripts/curl-loop.sh 20      # 남은 인스턴스만 응답
-az vmss list-instances -g $RG -n $VMSS --expand instanceView --query "[].{id:instanceId, name:osProfile.computerName, state:instanceView.statuses[?starts_with(code,'PowerState')].displayStatus | [0]}" -o table
+az vmss list-instances -g $RG -n $VMSS --expand instanceView --query "[].{instance:instanceId, name:osProfile.computerName, state:instanceView.statuses[?starts_with(code,'PowerState')].displayStatus | [0]}" -o table
 ```
 
 ## 3단계. 복구 (3분)

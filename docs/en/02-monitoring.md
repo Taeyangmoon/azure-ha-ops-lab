@@ -40,8 +40,8 @@ az vmss extension set -g $RG --vmss-name $VMSS \
 Check that it reached the instances. (The upgrade policy is `Automatic`, so it rolls out by itself.)
 
 ```bash
-az vmss extension list -g $RG --vmss-name $VMSS --query "[].{name:name, state:provisioningState}" -o table
-az vmss list-instances -g $RG -n $VMSS --query "[].{id:instanceId, latestModel:latestModelApplied}" -o table
+az vmss extension list -g $RG --vmss-name $VMSS --query "[].{name:name, version:typeHandlerVersion}" -o table
+az vmss list-instances -g $RG -n $VMSS --query "[].{instance:instanceId, latestModel:latestModelApplied}" -o table
 ```
 
 Wait 1-3 minutes until `latestModel` is `true` for all instances.
@@ -95,7 +95,7 @@ Two instances with `MinutesAgo` of 0-1 is healthy. **An instance whose `MinutesA
 ```kusto
 Perf
 | where TimeGenerated > ago(1h)
-| where ObjectName == "Processor" and CounterName == "% Processor Time" and InstanceName == "_Total"
+| where ObjectName == "Processor" and CounterName == "% Processor Time" and InstanceName == "total"
 | summarize AvgCpu = avg(CounterValue) by bin(TimeGenerated, 1m), Computer
 | render timechart
 ```

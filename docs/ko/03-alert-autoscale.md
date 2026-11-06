@@ -93,10 +93,10 @@ scripts/stress.sh start 900
 **① 인스턴스 수**
 
 ```bash
-az vmss list-instances -g $RG -n $VMSS --query "[].{id:instanceId, name:osProfile.computerName, state:provisioningState}" -o table
+az vmss list-instances -g $RG -n $VMSS --query "[].{instance:instanceId, name:osProfile.computerName, state:provisioningState}" -o table
 ```
 
-CPU가 70%를 넘고 3분 정도 지나면 인스턴스가 **3대**가 됩니다. (새 인스턴스에는 부하가 없어서 평균이 70% 아래로 내려가면 3대에서 멈춥니다. 정상입니다.)
+CPU가 70%를 넘고 3분 정도 지나면 인스턴스가 **3대**가 됩니다. (새 인스턴스에는 부하가 없어서 평균이 70% 아래로 내려가면 3대에서 멈추고, 아니면 쿨다운 뒤 최대 **4대**까지 늘어납니다. 둘 다 정상입니다.)
 
 **② 새 인스턴스가 서비스에 참여하는지**
 

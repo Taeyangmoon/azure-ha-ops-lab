@@ -11,7 +11,7 @@ param location string = resourceGroup().location
 param prefix string = 'halab'
 
 @description('VM size. Use a size that your subscription has quota for. / VM 크기 (구독 할당량 확인)')
-param vmSize string = 'Standard_B2s'
+param vmSize string = 'Standard_B2s_v2'
 
 @description('Initial instance count. / 초기 인스턴스 수')
 @minValue(2)

@@ -37,7 +37,7 @@ scripts/deploy.sh
 
 약 5~8분 걸립니다. 기다리는 동안 [`infra/main.bicep`](../../infra/main.bicep) 을 열어 보세요. 위 표의 리소스가 코드로 어떻게 표현되는지 볼 수 있습니다.
 
-기본값은 `koreacentral` 리전, `Standard_B2s` 크기입니다. 바꾸려면:
+기본값은 `koreacentral` 리전, `Standard_B2s_v2` 크기입니다. 바꾸려면:
 
 ```bash
 LOCATION=japaneast VM_SIZE=Standard_D2s_v5 scripts/deploy.sh
@@ -56,7 +56,7 @@ echo $LB_IP
 
 ```bash
 curl http://$LB_IP/whoami.txt
-az vmss list-instances -g $RG -n $VMSS --query "[].{id:instanceId, name:osProfile.computerName, zone:zones[0], state:provisioningState}" -o table
+az vmss list-instances -g $RG -n $VMSS --query "[].{instance:instanceId, name:osProfile.computerName, zone:zones[0], state:provisioningState}" -o table
 ```
 
 브라우저에서 `http://<LB_IP>` 를 열어도 됩니다. 인스턴스 이름이 보이면 성공입니다.
@@ -66,6 +66,7 @@ az vmss list-instances -g $RG -n $VMSS --query "[].{id:instanceId, name:osProfil
 | 증상 | 해결 |
 |---|---|
 | `QuotaExceeded` / 코어 부족 | 다른 리전 또는 `VM_SIZE` 변경. 할당량 확인: `az vm list-usage -l $LOCATION -o table` |
+| `SkuNotAvailable` (예: `Standard_B2s` 용량 제한) | 다른 크기 사용: `VM_SIZE=Standard_B2s_v2 scripts/deploy.sh`. 가용 크기: `az vm list-skus -l $LOCATION --resource-type virtualMachines -o table` |
 | `SkuNotAvailable` / 영역 관련 오류 | `USE_ZONES=false scripts/deploy.sh` (영역 미지원 리전/크기) |
 | 배포 후 `curl` 이 응답 없음 | 인스턴스가 nginx를 설치하는 중입니다. 1~3분 후 다시 시도 |
 | 이름 충돌 | `RESOURCE_GROUP=rg-ha-ops-lab2 scripts/deploy.sh` |

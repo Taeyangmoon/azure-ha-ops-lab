@@ -29,7 +29,7 @@ az deployment group create \
   -g "$RESOURCE_GROUP" \
   -n main \
   -f "$ROOT_DIR/infra/main.bicep" \
-  -p sshPublicKey="$(cat "$KEY_FILE.pub")" vmSize="${VM_SIZE:-Standard_B2s}" useAvailabilityZones="${USE_ZONES:-true}" \
+  -p sshPublicKey="$(cat "$KEY_FILE.pub")" vmSize="${VM_SIZE:-Standard_B2s_v2}" useAvailabilityZones="${USE_ZONES:-true}" \
   -o none
 
 get() { az deployment group show -g "$RESOURCE_GROUP" -n main --query "properties.outputs.$1.value" -o tsv; }

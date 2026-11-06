@@ -51,7 +51,7 @@ In terminal B you should see **only one instance name**, with no or very few `FA
 
 ```bash
 scripts/curl-loop.sh 20      # only the remaining instance answers
-az vmss list-instances -g $RG -n $VMSS --expand instanceView --query "[].{id:instanceId, name:osProfile.computerName, state:instanceView.statuses[?starts_with(code,'PowerState')].displayStatus | [0]}" -o table
+az vmss list-instances -g $RG -n $VMSS --expand instanceView --query "[].{instance:instanceId, name:osProfile.computerName, state:instanceView.statuses[?starts_with(code,'PowerState')].displayStatus | [0]}" -o table
 ```
 
 ## Step 3. Recover (3 min)

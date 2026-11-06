@@ -93,10 +93,10 @@ Starting 1-2 minutes in, repeat the checks below.
 **① Instance count**
 
 ```bash
-az vmss list-instances -g $RG -n $VMSS --query "[].{id:instanceId, name:osProfile.computerName, state:provisioningState}" -o table
+az vmss list-instances -g $RG -n $VMSS --query "[].{instance:instanceId, name:osProfile.computerName, state:provisioningState}" -o table
 ```
 
-About 3 minutes after CPU passes 70%, you get **3 instances**. (The new instance has no load, so the average may fall below 70% and scaling stops at 3. This is normal.)
+About 3 minutes after CPU passes 70%, you get **3 instances**. (The new instance has no load, so the average may fall below 70% and scaling stops at 3; otherwise it keeps growing to the maximum of **4** after the cooldown. Both are normal.)
 
 **② Is the new instance serving traffic?**
 
