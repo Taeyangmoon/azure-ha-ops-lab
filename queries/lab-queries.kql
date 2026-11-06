@@ -1,0 +1,46 @@
+// 1) Is every instance reporting in? (Azure Monitor Agent heartbeat)
+Heartbeat
+| where TimeGenerated > ago(15m)
+| summarize LastHeartbeat = max(TimeGenerated), Beats = count() by Computer
+| extend MinutesAgo = datetime_diff('minute', now(), LastHeartbeat)
+| order by Computer asc
+
+// 2) CPU per instance over time
+Perf
+| where TimeGenerated > ago(1h)
+| where ObjectName == "Processor" and CounterName == "% Processor Time" and InstanceName == "_Total"
+| summarize AvgCpu = avg(CounterValue) by bin(TimeGenerated, 1m), Computer
+| render timechart
+
+// 3) Memory used per instance
+Perf
+| where TimeGenerated > ago(1h)
+| where ObjectName == "Memory" and CounterName == "% Used Memory"
+| summarize AvgMem = avg(CounterValue) by bin(TimeGenerated, 1m), Computer
+| render timechart
+
+// 4) Peak CPU per instance (find who was busy)
+Perf
+| where TimeGenerated > ago(1h)
+| where ObjectName == "Processor" and CounterName == "% Processor Time" and InstanceName == "_Total"
+| summarize MaxCpu = max(CounterValue), AvgCpu = avg(CounterValue) by Computer
+| order by MaxCpu desc
+
+// 5) Minutes with CPU above 70% (the same threshold used by the alert in Module 3)
+Perf
+| where TimeGenerated > ago(1h)
+| where ObjectName == "Processor" and CounterName == "% Processor Time" and InstanceName == "_Total"
+| summarize AvgCpu = avg(CounterValue) by bin(TimeGenerated, 1m), Computer
+| where AvgCpu > 70
+
+// 6) Syslog: what is the OS telling us?
+Syslog
+| where TimeGenerated > ago(1h)
+| summarize Count = count() by Computer, Facility, SeverityLevel
+| order by Count desc
+
+// 7) Instance count over time (grows when autoscale adds instances)
+Heartbeat
+| where TimeGenerated > ago(1h)
+| summarize Instances = dcount(Computer) by bin(TimeGenerated, 1m)
+| render timechart

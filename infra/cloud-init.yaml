@@ -1,0 +1,27 @@
+#cloud-config
+# Installs nginx + stress and publishes a page that shows which instance served the request.
+package_update: true
+packages:
+  - nginx
+  - stress
+write_files:
+  - path: /usr/local/bin/render-page.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      HOST=$(hostname)
+      ZONE=$(curl -s -H Metadata:true "http://169.254.169.254/metadata/instance/compute/zone?api-version=2021-02-01&format=text")
+      ZONE=${ZONE:-none}
+      echo "${HOST} (zone ${ZONE})" > /var/www/html/whoami.txt
+      cat > /var/www/html/index.html <<EOF
+      <!doctype html>
+      <html><head><meta charset="utf-8"><title>Azure HA Ops Lab</title></head>
+      <body style="font-family:sans-serif;text-align:center;margin-top:15vh">
+        <h1>Azure HA Ops Lab</h1>
+        <h2 style="color:#0078d4">${HOST}</h2>
+        <p>Availability Zone: ${ZONE}</p>
+      </body></html>
+      EOF
+runcmd:
+  - /usr/local/bin/render-page.sh
+  - systemctl enable --now nginx
