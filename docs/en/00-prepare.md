@@ -51,7 +51,7 @@ source .lab.env
 echo $LB_IP
 ```
 
-These variables (`RG`, `VMSS`, `LB_IP`, `WORKSPACE`, ...) are used in later modules. **In a new terminal, run `source .lab.env` again.**
+These variables (`RG`, `SUBSCRIPTION_ID`, `VMSS`, `LB_IP`, `WORKSPACE`, ...) are used in later modules. **In a new terminal, run `source .lab.env` again.** Also select the Azure CLI subscription with `az account set --subscription "$SUBSCRIPTION_ID"`. The stress and cleanup scripts abort if the selected subscription differs from the deployment subscription.
 
 ### 4. Verify
 
@@ -69,7 +69,7 @@ You can also open `http://<LB_IP>` in a browser. If you see an instance name, yo
 | `QuotaExceeded` / not enough cores | Use another region or change `VM_SIZE`. Check quota: `az vm list-usage -l $LOCATION -o table` |
 | `SkuNotAvailable` (e.g. capacity restrictions on `Standard_B2s`) | Use another size: `VM_SIZE=Standard_B2s_v2 scripts/deploy.sh`. List sizes: `az vm list-skus -l $LOCATION --resource-type virtualMachines -o table` |
 | `SkuNotAvailable` / zone errors | `USE_ZONES=false scripts/deploy.sh` (region/size without zone support) |
-| `curl` gets no response after deploy | The instances are still installing nginx. Retry in 1-3 minutes |
+| Web server readiness times out | The script exits with an error but keeps `.lab.env`. Run `source .lab.env`, inspect cloud-init/nginx, or run `scripts/cleanup.sh` |
 | Name conflict | `RESOURCE_GROUP=rg-ha-ops-lab2 scripts/deploy.sh` |
 
 Next → [Module 1. High availability](01-high-availability.md)

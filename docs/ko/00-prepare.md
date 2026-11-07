@@ -50,7 +50,7 @@ source .lab.env
 echo $LB_IP
 ```
 
-이 변수(`RG`, `VMSS`, `LB_IP`, `WORKSPACE` 등)는 이후 모듈에서 계속 사용합니다. **터미널을 새로 열면 `source .lab.env` 를 다시 실행**하세요.
+이 변수(`RG`, `SUBSCRIPTION_ID`, `VMSS`, `LB_IP`, `WORKSPACE` 등)는 이후 모듈에서 계속 사용합니다. **터미널을 새로 열면 `source .lab.env` 를 다시 실행**하세요. Azure CLI의 구독도 `az account set --subscription "$SUBSCRIPTION_ID"` 로 맞추세요. 부하 및 정리 스크립트는 배포한 구독과 다르면 중단합니다.
 
 ### 4. 확인
 
@@ -68,7 +68,7 @@ az vmss list-instances -g $RG -n $VMSS --query "[].{instance:instanceId, name:os
 | `QuotaExceeded` / 코어 부족 | 다른 리전 또는 `VM_SIZE` 변경. 할당량 확인: `az vm list-usage -l $LOCATION -o table` |
 | `SkuNotAvailable` (예: `Standard_B2s` 용량 제한) | 다른 크기 사용: `VM_SIZE=Standard_B2s_v2 scripts/deploy.sh`. 가용 크기: `az vm list-skus -l $LOCATION --resource-type virtualMachines -o table` |
 | `SkuNotAvailable` / 영역 관련 오류 | `USE_ZONES=false scripts/deploy.sh` (영역 미지원 리전/크기) |
-| 배포 후 `curl` 이 응답 없음 | 인스턴스가 nginx를 설치하는 중입니다. 1~3분 후 다시 시도 |
+| 웹 서버 준비 대기 시간 초과 | 스크립트는 실패 상태로 종료하지만 `.lab.env` 는 남깁니다. `source .lab.env` 후 cloud-init/nginx 상태를 확인하거나 `scripts/cleanup.sh` 로 정리하세요 |
 | 이름 충돌 | `RESOURCE_GROUP=rg-ha-ops-lab2 scripts/deploy.sh` |
 
 다음 → [모듈 1. 고가용성](01-high-availability.md)

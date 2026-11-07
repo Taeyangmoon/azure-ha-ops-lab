@@ -9,6 +9,7 @@ RESOURCE_GROUP="${RESOURCE_GROUP:-rg-ha-ops-lab}"
 KEY_FILE="$ROOT_DIR/.lab-key"
 
 require_login
+SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
 SUB_NAME="$(az account show --query name -o tsv)"
 msg "구독: $SUB_NAME / 리전: $LOCATION / 리소스 그룹: $RESOURCE_GROUP" \
     "Subscription: $SUB_NAME / Region: $LOCATION / Resource group: $RESOURCE_GROUP"
@@ -36,6 +37,7 @@ get() { az deployment group show -g "$RESOURCE_GROUP" -n main --query "propertie
 
 cat > "$ENV_FILE" <<EOF
 export RG="$RESOURCE_GROUP"
+export SUBSCRIPTION_ID="$SUBSCRIPTION_ID"
 export LOCATION="$LOCATION"
 export VMSS="$(get vmssName)"
 export LB_IP="$(get lbPublicIp)"
@@ -47,13 +49,17 @@ EOF
 source "$ENV_FILE"
 
 msg "[5/5] 웹 서버 준비 대기 (cloud-init 설치 중, 최대 5분)" "[5/5] Waiting for the web servers (cloud-init is installing nginx, up to 5 min)"
+READY=false
 for i in $(seq 1 30); do
   if curl -fsS --max-time 3 "http://$LB_IP/whoami.txt" >/dev/null 2>&1; then
+    READY=true
     msg "준비 완료!" "Ready!"
     break
   fi
   sleep 10
 done
+[[ "$READY" == true ]] || die "웹 서버가 준비되지 않았습니다. .lab.env 는 보존했습니다. cloud-init/nginx 상태를 확인하거나 scripts/cleanup.sh 로 정리하세요." \
+    "Web servers did not become ready. Kept .lab.env. Check cloud-init/nginx or run scripts/cleanup.sh."
 
 echo
 msg "웹 주소: http://$LB_IP  ($LB_FQDN)" "Web URL: http://$LB_IP  ($LB_FQDN)"

@@ -23,5 +23,10 @@ load_env() {
 }
 
 require_login() {
-  az account show >/dev/null 2>&1 || die "az login --use-device-code 로 먼저 로그인하세요." "Run 'az login --use-device-code' first."
+  local current_subscription
+  current_subscription="$(az account show --query id -o tsv)" || die "az login --use-device-code 로 먼저 로그인하세요." "Run 'az login --use-device-code' first."
+  if [[ -n "${SUBSCRIPTION_ID:-}" && "$current_subscription" != "$SUBSCRIPTION_ID" ]]; then
+    die "랩을 배포한 구독과 다릅니다. az account set --subscription '$SUBSCRIPTION_ID' 로 선택하세요." \
+        "Wrong subscription. Select the lab subscription with: az account set --subscription '$SUBSCRIPTION_ID'"
+  fi
 }

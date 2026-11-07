@@ -71,6 +71,10 @@ docs/ko, docs/en per-module lab guides
 
 Script messages are Korean by default. Run `export LAB_LANG=en` first to get English messages.
 
+## Script regression tests
+
+Run `python3 -B -m unittest discover -s tests -v` to check error handling and cleanup target guards. The tests mock Azure CLI; they create no cloud resources and incur no Azure charges.
+
 ## License
 
 [MIT](LICENSE)

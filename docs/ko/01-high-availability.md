@@ -38,7 +38,7 @@ scripts/curl-loop.sh 20
 
 ```bash
 # 터미널 B: 1초 간격으로 응답 확인
-while true; do curl -s --max-time 2 -H 'Connection: close' http://$LB_IP/whoami.txt || echo "FAILED"; sleep 1; done
+while true; do curl -fsS --max-time 2 -H 'Connection: close' http://$LB_IP/whoami.txt || echo "FAILED"; sleep 1; done
 ```
 
 원래 터미널에서 인스턴스 0번을 중지(할당 취소)합니다.

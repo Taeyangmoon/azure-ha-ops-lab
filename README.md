@@ -71,6 +71,10 @@ docs/ko, docs/en 모듈별 실습 문서
 
 모든 문서와 스크립트 메시지는 영어도 제공합니다. 스크립트 메시지를 영어로 보려면 `export LAB_LANG=en` 을 먼저 실행하세요. See [README.en.md](README.en.md).
 
+## 스크립트 회귀 테스트
+
+`python3 -B -m unittest discover -s tests -v` 로 오류 처리와 삭제 대상 보호를 검증합니다. Azure CLI를 모의 실행하므로 실제 리소스를 만들거나 과금하지 않습니다.
+
 ## 라이선스
 
 [MIT](LICENSE)

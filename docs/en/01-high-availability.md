@@ -38,7 +38,7 @@ Open a second terminal (run `source .lab.env`) and keep sending requests.
 
 ```bash
 # Terminal B: check the response every second
-while true; do curl -s --max-time 2 -H 'Connection: close' http://$LB_IP/whoami.txt || echo "FAILED"; sleep 1; done
+while true; do curl -fsS --max-time 2 -H 'Connection: close' http://$LB_IP/whoami.txt || echo "FAILED"; sleep 1; done
 ```
 
 In the original terminal, stop (deallocate) instance 0.

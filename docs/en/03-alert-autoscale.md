@@ -25,6 +25,7 @@ source .lab.env
 export EMAIL="me@example.com"      # use an address you can read
 
 az monitor action-group create -g $RG -n ag-halab --short-name halab \
+  --tags project=azure-ha-ops-lab env=workshop \
   --action email ops-admin "$EMAIL" -o none
 ```
 
@@ -41,6 +42,7 @@ az monitor metrics alert create -g $RG -n alert-halab-cpu-high \
   --condition "avg Percentage CPU > 70" \
   --window-size 5m --evaluation-frequency 1m \
   --severity 2 \
+  --tags project=azure-ha-ops-lab env=workshop \
   --action $AG_ID \
   --description "VMSS average CPU above 70% for 5 minutes" -o none
 ```
@@ -60,6 +62,7 @@ Portal: Monitor → Alerts → **Alert rules**, find `alert-halab-cpu-high`.
 # min 2, max 4, default 2
 az monitor autoscale create -g $RG -n autoscale-halab \
   --resource $VMSS --resource-type Microsoft.Compute/virtualMachineScaleSets \
+  --tags project=azure-ha-ops-lab env=workshop \
   --min-count 2 --max-count 4 --count 2 -o none
 
 # Scale out: add 1 when 3-minute average CPU > 70%
@@ -85,6 +88,8 @@ scripts/stress.sh start 900
 ```
 
 The `stress` tool drives CPU on every instance close to 100% for 15 minutes. (It uses `az vmss run-command`, so no SSH is needed.)
+
+The script checks that the load service started on each instance. If an invocation or guest command fails, it exits with an error. Load may still be running on successful instances; use `scripts/stress.sh stop` to stop it.
 
 ## Step 5. Watch scale-out and the alert (8 min)
 

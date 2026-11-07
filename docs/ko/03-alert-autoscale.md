@@ -25,6 +25,7 @@ source .lab.env
 export EMAIL="me@example.com"      # 실제로 받을 수 있는 주소로 바꾸세요
 
 az monitor action-group create -g $RG -n ag-halab --short-name halab \
+  --tags project=azure-ha-ops-lab env=workshop \
   --action email ops-admin "$EMAIL" -o none
 ```
 
@@ -41,6 +42,7 @@ az monitor metrics alert create -g $RG -n alert-halab-cpu-high \
   --condition "avg Percentage CPU > 70" \
   --window-size 5m --evaluation-frequency 1m \
   --severity 2 \
+  --tags project=azure-ha-ops-lab env=workshop \
   --action $AG_ID \
   --description "VMSS average CPU above 70% for 5 minutes" -o none
 ```
@@ -60,6 +62,7 @@ az monitor metrics alert create -g $RG -n alert-halab-cpu-high \
 # 최소 2대, 최대 4대, 기본 2대
 az monitor autoscale create -g $RG -n autoscale-halab \
   --resource $VMSS --resource-type Microsoft.Compute/virtualMachineScaleSets \
+  --tags project=azure-ha-ops-lab env=workshop \
   --min-count 2 --max-count 4 --count 2 -o none
 
 # 확장: 3분 평균 CPU > 70% 이면 1대 추가
@@ -85,6 +88,8 @@ scripts/stress.sh start 900
 ```
 
 `stress` 도구가 모든 인스턴스의 CPU를 15분간 100% 가까이 사용합니다. (`az vmss run-command` 를 쓰므로 SSH가 필요 없습니다.)
+
+스크립트는 각 인스턴스에서 부하 서비스가 시작됐는지 확인합니다. 일부 호출 또는 원격 명령이 실패하면 오류로 종료하며, 성공한 인스턴스의 부하는 계속 실행될 수 있으므로 `scripts/stress.sh stop` 으로 정리하세요.
 
 ## 5단계. 확장과 경고 관찰 (8분)
 

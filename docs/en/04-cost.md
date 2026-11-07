@@ -23,6 +23,8 @@
 
 > A budget **does not stop spending.** It only notifies (or calls an action group) when a threshold is crossed. To stop resources automatically, connect the action group to something like Automation.
 
+A budget can remain after its resource group is deleted. Use `scripts/cleanup.sh` after the lab; it explicitly deletes group-scoped budgets too.
+
 ## Step 2. Cost analysis by tag (2 min)
 
 In Module 0 every resource received the tags `project=azure-ha-ops-lab` and `env=workshop`.
